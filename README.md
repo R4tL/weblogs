@@ -1,2 +1,2 @@
 # weblogs
-🛜 Lightweight localhost web server made to quickly visualize the dynamic .log or .txt files of your choice. 
+🛜 Lightweight web server made to quickly visualize the dynamic log files of your choice from your localhost interface ! 
