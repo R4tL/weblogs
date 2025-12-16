@@ -1,0 +1,7 @@
+__pycache__/
+
+# Ignore environment and secret files
+.env
+.envrc
+.venv
+venv/
