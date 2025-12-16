@@ -30,11 +30,12 @@
 				</div>
 				<form id="params_form" name="params_form" method="post" action="{{ url_for('index') }}" style="display:grid; grid-template-columns: 1fr 1fr; width: 60%" enctype="multipart/form-data">
 					<div class="column">
-						<!-- <hr style="background-color: transparent; height: 0%"> -->
 						<div>
 							<fieldset style="padding-left: 0.4rem; padding-right: 0.4rem; margin-bottom: 1rem; display: column flex; border-radius: 4px;">
 								<legend>&nbsp;&#x1F5C1;&ensp;<b>file:</b>&nbsp;</legend>
-								<label>Current:&ensp;{{ file_path }}</label>
+								<label>Current:&ensp;
+									<input type="text" value="{{ file_path }}" readonly>
+								</label>
 								<button type="button" style= "width: 100%; margin-bottom: 0.4rem; " onclick="window.location.href='{{ url_for( 'open_file') }}';">Pick new</button>
 							</fieldset>
 						</div>
