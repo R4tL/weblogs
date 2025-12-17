@@ -12,7 +12,6 @@ from pygtail import Pygtail
 # [ ] comment
 # [ ] separate README
 
-LOCPATH = Path(__file__).parent
 
 weblogs = Flask(__name__)
 
@@ -20,7 +19,7 @@ config = weblogs.config
 config.update(
     PROGRAM_NAME='MyProject',
     FILE_DISPLAY_PATH= 'static/example.log',
-    FILE_FULL_PATH=str(LOCPATH / "static" / "example.log"),
+    FILE_FULL_PATH=str(Path(__file__).parent / "static" / "example.log"),
     FONT_SIZE=10,
     REFRESH_RATE=1000,
     SMOOTHNESS=0.01,
