@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import time
 import re
 import crossfiledialog
@@ -12,13 +12,15 @@ from pygtail import Pygtail
 # [ ] comment
 # [ ] separate README
 
+LOCPATH = Path(__file__).parent
+
 weblogs = Flask(__name__)
 
 config = weblogs.config
 config.update(
     PROGRAM_NAME='MyProject',
-    FILE_DISPLAY_PATH='static/example.log',
-    FILE_FULL_PATH=os.path.abspath('static/example.log'),
+    FILE_DISPLAY_PATH= 'static/example.log',
+    FILE_FULL_PATH=str(LOCPATH / "static" / "example.log"),
     FONT_SIZE=10,
     REFRESH_RATE=1000,
     SMOOTHNESS=0.01,
@@ -148,8 +150,7 @@ def index():
 
     # Remove the log offset file each time the root url is refreshed
     offset_file_path = config['FILE_FULL_PATH'] + ".offset"
-    if os.path.isfile(offset_file_path):
-        os.remove(offset_file_path)
+    Path(offset_file_path).unlink(missing_ok=True)
 
     return render_template(
         template_name_or_list='logs.html',
@@ -194,13 +195,13 @@ def open_file():
 
     path = crossfiledialog.open_file(
         title="Pick a new log file !",
-        start_dir=os.path.dirname(os.getcwd()),
+        start_dir=Path.cwd().parent,
         filter=["*.log", "*.txt", "*.doc", "*.docx", "*.md", "*.rtf", "*.msg"]
     )
     # Updating the weblogs configuration with the relative path of the new selected file (only if there is one !)
     if path:
         config['FILE_FULL_PATH'] = path
-        config['FILE_DISPLAY_PATH'] = os.path.relpath(path)
+        config['FILE_DISPLAY_PATH'] = str(Path(path).relative_to(Path.cwd()))
 
     return redirect("/")
 
