@@ -1,11 +1,11 @@
 [project]
-name = "weblog"
+name = "weblogs"
 version = "1.0.0"
 description = "Web logger."
 authors = [{ name = "bjorn6699" }]
 requires-python = ">=3.14"
 readme = "README.md"
-license = { file = "LISENSE" }
+license = { file = "LICENSE" }
 dependencies = [
     " blinker==1.9.0",
     "click==8.3.1",
