@@ -1,0 +1,30 @@
+[project]
+name = "weblog"
+version = "1.0.0"
+description = "Web logger."
+authors = [{ name = "bjorn6699" }]
+requires-python = ">=3.14"
+readme = "README.md"
+license = { file = "LISENSE" }
+dependencies = [
+    " blinker==1.9.0",
+    "click==8.3.1",
+    "crossfiledialog==1.1.0",
+    "Flask==3.1.2",
+    "itsdangerous==2.2.0",
+    "Jinja2==3.1.6",
+    "MarkupSafe==3.0.3",
+    "pygtail==0.14.0",
+    "Werkzeug==3.1.4",
+    "pywin32==311",
+]
+
+[project.scripts]
+weblogs = "weblogs.weblogs:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" dir="ltr" class="uk-height-1-1" data-theme="{{ console_theme }}" style="background-color: light-dark(#efedea, #3131311e); color-scheme: {{ console_theme }}">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ program_name }} logs</title>
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js" type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script> -->
+	<!--In case cdn fails, local static files will load up-->
+	<link rel="icon" href="{{ url_for('static', filename='page_icon.ico') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.min.css') }}" />
+	<script defer src="{{ url_for('static', filename='js/all.js') }}" type="text/javascript"></script>
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}" type="text/javascript"></script>
+	</head>
+<body>
+<section class="section">
+<div class="container">
+	<div class="columns is-centered is-mobile">
+		<div class="column is-muted notification is-four-fifths is-{{ console_theme }}">
+			<div id="params" class="is-flex is-align-items-flex-start is-flex-wrap-wrap" style="flex: 1 auto">
+				<div class="column">
+					<h1 class="title">{{ program_name }} - logs</h1>
+					<h2 class="subtitle">&#x1F6DC; Live server</h2>
+					<div id="uptime" class="is-flex is-align-items-flex-start is-flex-wrap-wrap">
+						<div id="uptime_tag" class="is-flex is-flex-wrap-wrap">&#x23F1;&ensp;<b>uptime:</b>&nbsp;</div>
+						<div id="uptime_updated" class="is-flex is-flex-wrap-wrap"></div>
+					</div>
+					<button type="submit" form="params_form" style="width: 80%; height: 30%; margin-top: 0.4rem;">Reload</button>
+				</div>
+				<form id="params_form" name="params_form" method="post" action="{{ url_for('index') }}" style="display:grid; grid-template-columns: 1fr 1fr; width: 60%" enctype="multipart/form-data">
+					<div class="column">
+						<div>
+							<fieldset style="padding-left: 0.4rem; padding-right: 0.4rem; margin-bottom: 1rem; display: column flex; border-radius: 4px;">
+								<legend>&nbsp;&#x1F5C1;&ensp;<b>file:</b>&nbsp;</legend>
+								<label>Current:&ensp;
+									<input type="text" value="{{ file_path }}" readonly>
+								</label>
+								<button type="button" style= "width: 100%; margin-bottom: 0.4rem; " onclick="window.location.href='{{ url_for( 'open_file') }}';">Pick new</button>
+							</fieldset>
+						</div>
+						<div>
+							<label>
+								&#x1F5D8;&ensp;&nbsp;<b>refresh rate:</b>&nbsp;
+								<input type="number" id="refresh_rate" name="refresh_rate" min="500" max="60000" step="100" value="{{ refresh_rate }}" placeholder="0">
+								<span>msecs</span>
+							</label>
+						</div>
+						<div>
+							<label>
+								&#x1F5DA;&ensp;<b>font size:</b>&nbsp;
+								<input type="number" id="font_size" name="font_size" min="1" max="30" value="{{ font_size }}" placeholder="10">
+							</label>
+						</div>
+						<div>
+							<label>
+								&#x301C;&ensp;<b>smoothness:</b>&nbsp;
+								<input type="number" id="smoothness" name="smoothness" min="0" max="10" step="0.001" value="{{ smoothness }}" placeholder="0.01">
+								<span>sec/line</span>
+							</label>
+						</div>
+					</div>
+					<div class="column">
+						<div>
+							<fieldset style="padding-left: 0.4rem; display: column flex; border-radius: 4px;">
+								<legend>&nbsp;&#x1F3A8;&ensp;<b>console colors:</b>&nbsp;</legend>
+								<div>
+									<input type="radio" id="auto" name="colors" value="auto"/>
+									<label for="auto">Auto</label>
+								</div>
+
+								<div>
+									<input type="radio" id="ansi" name="colors" value="ansi"/>
+									<label for="ansi">Convert ANSI codes</label>
+								</div>
+
+								<div>
+									<input type="radio" id="no_colors" name="colors" value="no_colors"/>
+									<label for="no_colors">None</label>
+								</div>
+							</fieldset>
+						</div>
+						<div>
+							<fieldset style="padding-left: 0.4rem; display: column flex; border-radius: 4px;">
+								<legend>&nbsp;&#x1F441;&ensp;<b>theme:</b>&nbsp;</legend>
+								<div>
+									<input type="radio" id="light" name="theme" value="light"/>
+									<label for="light">Light</label>
+								</div>
+
+								<div>
+									<input type="radio" id="dark" name="theme" value="dark"/>
+									<label for="dark">Dark</label>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<hr>
+	</div>
+</div>
+<div class="container">
+	<div class="columns is-centered is-mobile">
+		<div class="column is-{{ console_theme }} notification is-four-fifths">
+			<div id="display">
+				<ul id="log_console" style="word-break: break-word; font-size:{{ font_size }}px;">
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+</section>
+
+<script type="text/javascript">
+
+	// Adding a new log line on top of all the others each time
+	// the /show_logs Flask ressource is updated
+
+	var source = new EventSource("/show_logs");
+	source.onmessage = function(event) {
+		$('#log_console').prepend('<li>'+event.data+'</li>');
+	}
+
+	// Updating the uptime field with the seconds counter
+
+	var source_uptime = new EventSource("/uptime");
+	source_uptime.onmessage = function(event) {
+		$('#uptime_updated').text(event.data +' seconds');
+		$('#uptime_updated').val(event.data);
+	}
+
+	// Keeping the radio buttons selected even after page refresh !
+
+	if ("{{ colorize_logs }}" === "True") {
+		document.getElementById("auto").checked=true;
+	}
+	else if ("{{ convert_ansi_colors }}" === "True") {
+		document.getElementById("ansi").checked=true;
+	}
+	else {
+		document.getElementById("no_colors").checked=true;
+	}
+
+	if ("{{ console_theme }}" === "dark") {
+		document.getElementById("dark").checked=true;
+	}
+	else {
+		document.getElementById("light").checked=true;
+	}
+
+</script>
+</body>
+</html>
